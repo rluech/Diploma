@@ -1,0 +1,50 @@
+---
+title: "Predicting Householdcomposition from TV-Viewing"
+author: "Rafael Lüchinger"
+date: "28 Januar 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## R Markdown
+
+```{r}
+library('tv')
+demday <- as.Date('2017-11-12')
+days <- as.character(seq(demday-28, demday+27, by = "day")) 
+cbind(ndays = table(weekdays(as.Date(days))))
+```
+
+```{r}
+id <- setup(days, obs = "ind", dem.var = c("sg","hhsize","age","sex"), 
+            dem.uni= FALSE, view = FALSE, prg = FALSE)
+```
+```{r, results=FALSE}
+import(id)
+```
+```{r}
+dem
+```
+```{r}
+dem[, `:=` (hh = pin %/% 1e2L, ind = pin %% 1e2L)]
+ordercol(dem, c("hh","ind"), "day")
+dem <- dem[(!guest)] # excluding 117 guests
+# dem[, .N, k=.(day,hh,sg,hhsize)][, .N, k=hh][N>1] # must be empty
+hh <- dcast(dem, day + hh + sg + hhsize ~ ind, value.var = c("age","sex"), fill = 0L)
+setnames(hh, 'hh', 'pin')
+rm(id, dem)
+```
+```{r}
+hh
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

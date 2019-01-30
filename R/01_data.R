@@ -48,7 +48,7 @@ dem[, `:=` (hh = pin %/% 1e2L, ind = pin %% 1e2L)]
 ordercol(dem, c("hh","ind"), "day")
 dem <- dem[(!guest)] # excluding 117 guests
 # dem[, .N, k=.(day,hh,sg,hhsize)][, .N, k=hh][N>1] # must be empty
-hh <- dcast(dem, day + sg + hh ~ ind, value.var = c("age","sex"), fill = 0L)
+hh <- dcast(dem, day + hh + sg + hhsize ~ ind, value.var = c("age","sex"), fill = 0L)
 setnames(hh, 'hh', 'pin')
 rm(id, dem)
 
@@ -105,7 +105,7 @@ X.tmb <- X.tmb[hh[,.(pin)], on="pin"]
 na.to.0(X.tmb) # na.omit(X.tmb, invert = TRUE)
 setnames(X.tmb, -1, paste0("day_",tolower(names(X.tmb)[-1])))
 
-# --- mean rating(%) by channel groups ----------------------------------------
+# --- sum viewing by channel groups ----------------------------------------
 
 # have a look at channel groups made by Luca
 # x <- id$lab$sta[ttv==1 & id < 8000]
@@ -201,6 +201,12 @@ hh.composition <- as.data.frame(hh)
 
 predictors <- X.tmb[X.chn[X.genre, on="pin"], on="pin"]
 predictors <- as.data.frame(predictors)
+
+setnames(hh.composition, 'pin', 'hh')
+setnames(predictors, 'pin', 'hh')
+
+setorder(hh.composition, 'hh')
+setorder(predictors, 'hh')
 
 save(hh.composition, predictors, file = '~/diplom/data/data_predictors.RData')
 
