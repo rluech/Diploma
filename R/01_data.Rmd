@@ -185,14 +185,19 @@ import(id)
 
 ## sum viewing by weekpart and daytime
 
+The 'tv' package provides a function 'dem.add' to add weekday and more calendar 
+variables given the date in a column.
+
 ```{r}
 dem.add(dem, 'calendar')
 nday <- dem[, .(N = uniqueN(day)), k=.(pin, wend)]
 ```
+
 ```{r, include = FALSE}
 calc.uni(dem[, weight := 1L]) # ungewichtet
 ```
-```{r}
+
+```{r, results = 'hide'}
 res <- calc(
   dt = view[dem, on=c('day',"pin")], 
   by = c("day","tmb","pin"), 
@@ -215,12 +220,24 @@ setnames(X.tmb, -1, paste0("day_",tolower(names(X.tmb)[-1])))
 
 ## sum viewing by channel groups
 
-```{r}
+The `tv` package provides a mapping table for channels including channel names 
+but also information on the type (genre) country of origin and language of each
+channel
+
+```{r, results = 'hide'}
+id$lab$sta
+```
+
+```{r, results = 'hide'}
 cols <- c("chn.type","chn.country","chn.lang")
 view[, (cols) := id$lab$sta[view, on=c(id="base"), mget(cols)]]
 ordercol(view, cols, "chn.name")
 # view[, any(is.na(chn.type))]
+```
 
+### channel types
+
+```{r, results = 'hide'}
 res.type <- calc(
   dt = view[dem, on=c('day',"pin")], 
   by = c("day","pin","chn.type"), 
@@ -236,7 +253,9 @@ X.chn.type <- X.chn.type[hh[,.(pin)], on="pin"]
 na.to.0(X.chn.type) # na.omit(X.chn.type, invert = TRUE)
 ```
 
-```{r}
+### channel country of origin
+
+```{r, results = 'hide'}
 res.country <- calc(
   dt = view[dem, on=c("day","pin")], 
   by = c("day","pin","chn.country"), 
@@ -252,7 +271,9 @@ X.chn.country <- X.chn.country[hh[,.(pin)], on="pin"]
 na.to.0(X.chn.country) # na.omit(X.chn.country, invert = TRUE)
 ```
 
-```{r}
+### channel language
+
+```{r, results = 'hide'}
 res.lang <- calc(
   dt = view[dem, on=c("day","pin")], 
   by = c("day","pin","chn.lang"), 
@@ -268,14 +289,22 @@ X.chn.lang <- X.chn.lang[hh[,.(pin)], on="pin"]
 na.to.0(X.chn.lang) # na.omit(X.chn.lang, invert = TRUE)
 ```
 
-```{r, echo = FALSE}
+### put together channel features 
+
+```{r, results = 'hide'}
+# these are nested left joins:
 X.chn <- X.chn.type[,-"0"][X.chn.country[,-"0"][X.chn.lang[,-"0"], on="pin"], on="pin"]
 setnames(X.chn, -1, paste0("chn_",tolower(names(X.chn)[-1])))
 ```
 
 ## sum viewing by program genre
 
-```{r}
+The 'tv' package provides a function `overlap.join` for joined overlap of time 
+segements. This splits all viewing statements by the corresponding program 
+schedule by day and by channel.
+
+```{r, results = 'hide'}
+
 view <- overlap.join(view, prog, type='prg')
 
 res.genre <- calc(
@@ -294,26 +323,34 @@ na.to.0(X.genre) # na.omit(X.genre, invert = TRUE)
 setnames(X.genre, -1, paste0("prg_",tolower(names(X.genre)[-1])))
 ```
 
+## combine all Features in one data.table
+
+```{r, results = 'hide'}
+predictors <- X.tmb[X.chn[X.genre, on="pin"], on="pin"] # nested left joins
+setnames(predictors, 'pin', 'hh')
+setorder(predictors, 'hh')
+```
+
+## View Features
+
+```{r }
+predictors[, 1:4]
+matrix(names(predictors), ncol = 3)
+```
+
 ## Export Data
 
-```{r}
-ordercol(hh, 'pin')
+```{r, results = 'hide'}
 hh.composition <- hh[, day := NULL]
-predictors <- X.tmb[X.chn[X.genre, on="pin"], on="pin"]
 setnames(hh.composition, 'pin', 'hh')
-setnames(predictors, 'pin', 'hh')
 setorder(hh.composition, 'hh')
-setorder(predictors, 'hh')
 
 # save(hh.composition, predictors, file = '~/diplom/data/data_predictors.RData')
 
 ```
 
-```{r}
-hh.composition
-predictors[, 1:10]
-cbind(names(predictors))
-```
+\pagebreak
+<div style="page-break-after: always;"></div>
 
 # Appendix
 

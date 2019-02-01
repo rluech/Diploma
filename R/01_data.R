@@ -1,53 +1,50 @@
 
 # generate predictors for hh composition based on viewing behavior
 
-# - Exclude Guest and Guestviewing. To match reality keep guestviewing 
-# - use unweighted viewing
-# - add sg
-# - Choose 8 recent Weeks with lots of viewing and typical viewing: 
-#   -> In Automn, no holidays/festivals, no special TV events (Sportevents)
-# - define the sample on a specific day in the middle of that period
-#   hhsize number of individuals, sex and particularly age may chage from day to day
-
-# --- global ------------------------------------------------------------------
-
-library('tv')
-demday <- as.Date('2017-11-12')
-days <- as.character(seq(demday-28, demday+27, by = "day")) 
-# table(weekdays(as.Date(days)))
-
 # --- understand hhsize -------------------------------------------------------
 
-id <- setup(days, dem.var = c("hhsize","age","sex"), dem.uni = FALSE )
-import(id)
-
-dem[, hh := as.integer(pin/100)]
-ordercol(dem, "hh", "day")
+# dayx <- as.Date('2017-11-12')
+# days <- seq(dayx - 28, dayx + 27, by = "day")
+# # table(weekdays(days))
+#
+# library('tv')
+# id <- setup(days, obs = "ind", dem.var = c("sg","hhsize","age","sex")
+#             , dem.uni = FALSE, view = FALSE, prg = FALSE)
+# import(id)
+# dem[, `:=` (hh = pin %/% 1e2L, ind = pin %% 1e2L)]
+# ordercol(dem, c("hh","ind"), "day")
+# (dem <- dem[(!guest)]) # excluding guests
 
 # hhsize is NOT constant over time. Because people move in or move out.
-id.hh <- dem[, uniqueN(hhsize) == 1, k = hh]
-dem[id.hh[(!V1)], on="hh"][, .(hh,day,hhsize,pin)]
+# id.hh <- dem[, uniqueN(hhsize) == 1, k = hh]
+# dem[id.hh[(!V1)], on="hh"][, .(hh,day,hhsize,pin)]
 
 # hhsize is NOT necessarily equal to the sum of individuals (ignoring guests)
 # 1. Babys 0-2 years old are excluded, this explains hhsize > sum(individuals)
 # 2. The variable hhsize has levels 1,2,..,5+, more than 5 hh members are 
 #    labeled "5+", this explains hhsize < sum(individuals)
 # 
-id.hh <- dem[(!guest), .(hhsize = hhsize, n.ind = uniqueN(pin)), k=.(day,hh)] 
-id.hh[, dif :=  n.ind - hhsize]
-id.hh <- id.hh[, .N, k=.(hh,hhsize,n.ind,dif)][!duplicated(hh)][,-"N"]
-table(id.hh[, .(hhsize, dif)]) # distribution seems plausible
+# id.hh <- dem[(!guest), .(hhsize = hhsize, n.ind = uniqueN(pin)), k=.(day,hh)] 
+# id.hh[, dif :=  n.ind - hhsize]
+# id.hh <- id.hh[, .N, k=.(hh,hhsize,n.ind,dif)][!duplicated(hh)][,-"N"]
+# table(id.hh[, .(hhsize, dif)]) # distribution seems plausible
 
 # --- hh composition ----------------------------------------------------------
 
+dayx <- as.Date('2017-11-12')
+days <- seq(dayx - 28, dayx + 27, by = "day")
+# table(weekdays(days))
+
+library('tv')
 id <- setup(days, obs = "ind", dem.var = c("sg","hhsize","age","sex"), 
-            dem.day = demday, dem.uni= FALSE, view = FALSE, prg = FALSE)
+            dem.day = dayx, dem.uni = FALSE, view = FALSE, prg = FALSE)
 import(id)
 
 dem[, `:=` (hh = pin %/% 1e2L, ind = pin %% 1e2L)]
 ordercol(dem, c("hh","ind"), "day")
 dem <- dem[(!guest)] # excluding 117 guests
 # dem[, .N, k=.(day,hh,sg,hhsize)][, .N, k=hh][N>1] # must be empty
+
 hh <- dcast(dem, day + hh + sg + hhsize ~ ind, value.var = c("age","sex"), fill = 0L)
 setnames(hh, 'hh', 'pin')
 rm(id, dem)
