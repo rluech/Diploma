@@ -345,7 +345,7 @@ hh.composition <- hh[, day := NULL]
 setnames(hh.composition, 'pin', 'hh')
 setorder(hh.composition, 'hh')
 
-# save(hh.composition, predictors, file = '~/diplom/data/data_predictors.RData')
+save(hh.composition, predictors, file = '~/diplom/data/data_predictors.RData')
 
 ```
 
