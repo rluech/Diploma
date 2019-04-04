@@ -1,8 +1,10 @@
 
-load("~/diplom/data/data_predictors.RData")
+setwd('C:/Users/rlue/Documents/git/diploma')
+load("./data/data_predictors.RData")
 
 # all(hh.composition$hh == predictors$hh)
 d <- cbind(hhsize = hh.composition$hhsize, predictors[,-1])
+d <- as.data.frame(d)
 
 # classification or regression, target as.factor or as.integer?
 d$hhsize <- factor(d$hhsize)
@@ -13,7 +15,7 @@ matrix(names(d), ncol = 3)
 
 par(mfrow = c(2,3))
 cols <- c('day_workday_02to06','day_weekend_17to20','day_workday_17to20')
-for(i in seq_along(cols)) plot(d[, cols[-i]])
+for(i in seq_along(cols)) plot(d[cols[-i]])
 for(i in seq_along(cols)) plot(log(d[, cols[-i]]) + 1)
 
 par(mfrow = c(2,3))
@@ -54,10 +56,32 @@ legend('topright', paste('hhsize', 1:5), bty = 'n', fill = adjustcolor(1:5, .65)
 fun(pca$x, 2:3, col = adjustcolor(as.integer(d$hhsize), .45))
 fun(pca$x, 3:4, col = adjustcolor(as.integer(d$hhsize), .45))
 
+# --- probability to classify correctly by pure chance ------------------------
 
+# naive
+x <- replicate(100, sample(1:5, nrow(hh.composition), replace = TRUE))
+round(mean(apply(x, 2, function(y) mean(y == hh.composition$hhsize))), 2)
 
-set.seed(1)
-d <- setNames(split(d, runif(nrow(d)) > .6), c("train","test"))
+# knowing the probability of each hhsize level
+p <- prop.table(table(hh.composition$hhsize))
+round(p*100,2)
+x <- replicate(100, sample(1:5, nrow(hh.composition), replace = TRUE, prob = p))
+round(mean(apply(x, 2, function(y) mean(y == hh.composition$hhsize))), 2)
+
+# --- partitioning into train and test data -----------------------------------
+
+# simple randomized partitioning
+# set.seed(1)
+# d <- setNames(split(d, runif(nrow(d)) > .6), c("train","test"))
+
+# stratified randomized partitioning
+library(caret)
+set.seed(999)
+train <- caret::createDataPartition(d$hhsize, p = .6, list = FALSE)
+d <- list(train = d[train,], test = d[-train,])
+
+round(table(d$train$hhsize) / nrow(d$train) * 100, 2)
+round(table(d$test$hhsize) / nrow(d$test) * 100, 2)
 
 # summary
 tbl <- function(x){
@@ -65,11 +89,56 @@ tbl <- function(x){
   x <- rbind(n = x, `%` = round(prop.table(x) * 100, 2))
   t(cbind(x, total = round(rowSums(x))))
 }
-lapply(d, tbl)
+x <- lapply(d, tbl)
+cbind(train = x$train, test = x$test)
 
-# chance is 1/5
-mean(hh.composition$hhsize == sample(1:5, nrow(hh.composition), replace = TRUE))
+x <- cbind(`train n` = table(d$train$hhsize), `test n` = table(d$test$hhsize))
+x <- cbind(x, cbind(`train %` = x[,1]/sum(x[,1]), `test %` = x[,2]/sum(x[,2])))
+round(x, 2)
 
+# --- regression --------------------------------------------------------------
+
+library(nnet)
+mnr <- multinom(hhsize ~ ., data = d$train, trace = TRUE, maxit = 500)
+
+vars <- varImp(mnr)
+vars <- setNames(vars[[1]], rownames(vars))
+dotchart(tail(sort(vars), 20)) # varImpPlot(vars) # inspiration
+
+pred.prob <- predict(mnr, type="probs", newdata=d$test)
+head(pred.prob)
+pred.class <- predict(mnr, type="class", newdata=d$test)
+head(pred.class)
+
+postResample(d$test$hhsize, pred.class)
+mean(d$test$hhsize == pred.class)
+
+performance.mnr <- list(
+  train = list(
+    accuracy = mean(d$train$hhsize == predict(mnr)),
+    confusion = table(true = d$train$hhsize, predict = predict(mnr))
+  ),
+  test = list(
+    accuracy = mean(d$test$hhsize == predict(mnr, d$test)),
+    confusion = table(true = d$test$hhsize, predict = predict(mnr, d$test))
+  )
+)
+
+summary(mnr)
+anova(mnr)
+
+trace <- TRUE
+drop1(mnr)
+
+require(MASS)
+# res <- stepAIC(mnr)
+# save(res, file = './data/stepAIC.RData')
+load('./data/stepAIC.RData')
+summary(res)
+res$AIC
+res$anova
+
+# --- support vector machine --------------------------------------------------
 
 library(e1071)
 
@@ -116,6 +185,7 @@ performance.svm.radial <- list(
 )
 performance.svm.radial
 
+# --- random forest -----------------------------------------------------------
 
 library(randomForest)
 
@@ -161,3 +231,4 @@ for (i in 2:5)
   partialPlot(rf, d$train, x.var = "prg_news", add = TRUE, col = i,
               which.class = levels(d$train$hhsize)[i]
   )
+
