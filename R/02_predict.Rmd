@@ -10,7 +10,7 @@ output:
 
 ```{r}
 
-load("~/diplom/data/data_predictors.RData")
+load("~/git/diploma/data/data_predictors.RData")
 
 # all(hh.composition$hh == predictors$hh)
 d <- cbind(hhsize = hh.composition$hhsize, predictors[,-1])
