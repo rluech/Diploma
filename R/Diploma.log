@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.1.13)  10 APR 2019 19:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.1.13)  11 APR 2019 22:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -715,118 +715,139 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 [1
 
 {c:/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 208.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 212.
 
 (c:/texlive/2018/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-Overfull \hbox (6.52483pt too wide) in alignment at lines 222--231
+Overfull \hbox (6.52483pt too wide) in alignment at lines 226--235
  [] [] [] [] [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (6.52483pt too wide) in alignment at lines 231--236
+Overfull \hbox (6.52483pt too wide) in alignment at lines 235--240
  [] [] [] [] [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (6.52483pt too wide) in alignment at lines 236--242
+Overfull \hbox (6.52483pt too wide) in alignment at lines 240--246
  [] [] [] [] [] [] [] [] [] [] [] [] [] 
  []
 
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 256.
+[2]
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 262.
 
 (c:/texlive/2018/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [2] [3] [4] [5]
+) [3] [4] [5]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 533.
-<../data/tv-week.png, id=127, 899.36pt x 583.17876pt>
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 549.
+[6] [7]
+LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 738
+.
+(c:/texlive/2018/texmf-dist/tex/latex/lm/ts1lmtt.fd
+File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+<Diploma_files/figure-latex/fig7-1.pdf, id=206, 469.755pt x 325.215pt>
+File: Diploma_files/figure-latex/fig7-1.pdf Graphic file (type pdf)
+<use Diploma_files/figure-latex/fig7-1.pdf>
+Package pdftex.def Info: Diploma_files/figure-latex/fig7-1.pdf  used on input l
+ine 788.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+<../data/tv-week.png, id=207, 899.36pt x 583.17876pt>
 File: ../data/tv-week.png Graphic file (type png)
 <use ../data/tv-week.png>
-Package pdftex.def Info: ../data/tv-week.png  used on input line 576.
+Package pdftex.def Info: ../data/tv-week.png  used on input line 801.
 (pdftex.def)             Requested size: 352.31342pt x 228.45323pt.
-<../data/tv-day.png, id=128, 411.78844pt x 285.31593pt>
-File: ../data/tv-day.png Graphic file (type png)
-<use ../data/tv-day.png>
-Package pdftex.def Info: ../data/tv-day.png  used on input line 585.
-(pdftex.def)             Requested size: 352.31525pt x 244.10873pt.
-[6pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) 
-has been already used, duplicate ignored
+[8] [9pdfTeX warning (ext4): destination with the same identifier (name{figure.
+1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.591 
-       <../data/tv-week.png>]
-<Diploma_files/figure-latex/fig3-1.pdf, id=134, 469.755pt x 325.215pt>
+l.807 
+       <./Diploma_files/figure-latex/fig7-1.pdf>]
+<../data/tv-day.png, id=229, 411.78844pt x 285.31593pt>
+File: ../data/tv-day.png Graphic file (type png)
+<use ../data/tv-day.png>
+Package pdftex.def Info: ../data/tv-day.png  used on input line 810.
+(pdftex.def)             Requested size: 352.31525pt x 244.10873pt.
+<Diploma_files/figure-latex/fig3-1.pdf, id=230, 469.755pt x 325.215pt>
 File: Diploma_files/figure-latex/fig3-1.pdf Graphic file (type pdf)
 <use Diploma_files/figure-latex/fig3-1.pdf>
 Package pdftex.def Info: Diploma_files/figure-latex/fig3-1.pdf  used on input l
-ine 594.
+ine 819.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<Diploma_files/figure-latex/fig4-1.pdf, id=135, 469.755pt x 325.215pt>
+<Diploma_files/figure-latex/fig4-1.pdf, id=231, 469.755pt x 325.215pt>
 File: Diploma_files/figure-latex/fig4-1.pdf Graphic file (type pdf)
 <use Diploma_files/figure-latex/fig4-1.pdf>
 Package pdftex.def Info: Diploma_files/figure-latex/fig4-1.pdf  used on input l
-ine 604.
+ine 829.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<Diploma_files/figure-latex/fig5-1.pdf, id=136, 469.755pt x 325.215pt>
+<Diploma_files/figure-latex/fig5-1.pdf, id=232, 469.755pt x 325.215pt>
 File: Diploma_files/figure-latex/fig5-1.pdf Graphic file (type pdf)
 <use Diploma_files/figure-latex/fig5-1.pdf>
 Package pdftex.def Info: Diploma_files/figure-latex/fig5-1.pdf  used on input l
-ine 618.
+ine 843.
 (pdftex.def)             Requested size: 234.87692pt x 162.6071pt.
-<Diploma_files/figure-latex/unnamed-chunk-6-1.pdf, id=137, 469.755pt x 325.215p
-t>
-File: Diploma_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
-<use Diploma_files/figure-latex/unnamed-chunk-6-1.pdf>
-Package pdftex.def Info: Diploma_files/figure-latex/unnamed-chunk-6-1.pdf  used
- on input line 628.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 631.
-[7pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) 
-has been already used, duplicate ignored
+[10pdfTeX warning (ext4): destination with the same identifier (name{figure.2})
+ has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.631 \end{document}
-                     <../data/tv-day.png> <./Diploma_files/figure-latex/fig5-1.
-pdf>] [8pdfTeX warning (ext4): destination with the same identifier (name{figur
+l.845 \}
+        pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.3}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.631 \end{document}
-                     <./Diploma_files/figure-latex/fig3-1.pdf>] [9pdfTeX warnin
-g (ext4): destination with the same identifier (name{figure.4}) has been alread
-y used, duplicate ignored
+l.845 \}
+         <../data/tv-week.png> <../data/tv-day.png>] [11pdfTeX warning (ext4): 
+destination with the same identifier (name{figure.4}) has been already used, du
+plicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.631 \end{document}
-                     <./Diploma_files/figure-latex/fig4-1.pdf>] [10 <./Diploma_
-files/figure-latex/unnamed-chunk-6-1.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 631.
+l.845 \}
+         <./Diploma_files/figure-latex/fig3-1.pdf>] [12pdfTeX warning (ext4): d
+estination with the same identifier (name{figure.5}) has been already used, dup
+licate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.845 \}
+         <./Diploma_files/figure-latex/fig4-1.pdf>]
+<Diploma_files/figure-latex/unnamed-chunk-15-1.pdf, id=263, 469.755pt x 325.215
+pt>
+File: Diploma_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
+
+<use Diploma_files/figure-latex/unnamed-chunk-15-1.pdf>
+Package pdftex.def Info: Diploma_files/figure-latex/unnamed-chunk-15-1.pdf  use
+d on input line 853.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 856.
+[13 <./Diploma_files/figure-latex/fig5-1.pdf> <./Diploma_files/figure-latex/unn
+amed-chunk-15-1.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 856.
 (./Diploma.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 631.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 631.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 856.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 856.
 Package rerunfilecheck Info: File `Diploma.out' has not changed.
-(rerunfilecheck)             Checksum: 9D255978AF30590ED1BE76176B140892;2136.
+(rerunfilecheck)             Checksum: 835BDBB299036F144A3714475D5ECFBB;3504.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 631.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 856.
  ) 
 Here is how much of TeX's memory you used:
- 13195 strings out of 492616
- 191952 string characters out of 6132768
- 311261 words of memory out of 5000000
- 16788 multiletter control sequences out of 15000+600000
- 51398 words of font info for 88 fonts, out of 8000000 for 9000
+ 13305 strings out of 492616
+ 193885 string characters out of 6132768
+ 313074 words of memory out of 5000000
+ 16850 multiletter control sequences out of 15000+600000
+ 51786 words of font info for 90 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,6n,38p,970b,459s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/texlive/2018/tex
-mf-dist/fonts/enc/dvips/lm/lm-ts1.enc}<c:/texlive/2018/texmf-dist/fonts/type1/p
+ 32i,6n,38p,970b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{c:/texlive/2018/te
+xmf-dist/fonts/enc/dvips/lm/lm-ec.enc}<c:/texlive/2018/texmf-dist/fonts/type1/p
 ublic/lm/lmbx10.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/lm/lmbx12.pf
 b><c:/texlive/2018/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2018/
 texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/texlive/2018/texmf-dist/fonts/ty
@@ -834,10 +855,10 @@ pe1/public/lm/lmr17.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri1
 0.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/
 2018/texmf-dist/fonts/type1/public/lm/lmtk10.pfb><c:/texlive/2018/texmf-dist/fo
 nts/type1/public/lm/lmtt10.pfb>
-Output written on Diploma.pdf (10 pages, 1659832 bytes).
+Output written on Diploma.pdf (13 pages, 1678407 bytes).
 PDF statistics:
- 233 PDF objects out of 1000 (max. 8388607)
- 200 compressed objects within 2 object streams
- 43 named destinations out of 1000 (max. 500000)
- 10375 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 339 PDF objects out of 1000 (max. 8388607)
+ 299 compressed objects within 3 object streams
+ 85 named destinations out of 1000 (max. 500000)
+ 10452 words of extra memory for PDF output out of 12000 (max. 10000000)
 

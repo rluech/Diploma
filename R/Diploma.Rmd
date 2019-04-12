@@ -87,6 +87,8 @@ constant over the 8 weeks period we are looking at.
 ```{r, echo = FALSE, warning = FALSE, messages = FALSE}
 library(knitr)
 load('~/git/diploma/data/data_predictors.RData')
+hh.composition <- as.data.frame(hh.composition)
+predictors <- as.data.frame(predictors)
 kable(tail(hh.composition[, c(1,3:8,12:16)], 3), row.names = NA, 
       caption="Household composition is the sociodemografic profile of a household, for example, household size, and age and gender of the householdmembers. The last 3 of our sample of 2006 households are shown. For this study the target to predict is _hhsize_.")
 ```
@@ -234,10 +236,9 @@ levels(predictors$hhsize) <- paste0("hhsize", levels(predictors$hhsize))
 ## Log Transformation
 
 Screening through the values of the 53 feature variables reveals that often the
-viewing duration is strongly right skewed and zero inflated (see Figure \ref{fig:fig3} in the Appendix). That means most households have a relatively low value of TV viewing duration but for a few households the viewing is relatively high. A log transformation makes the data more symmetric. Although in general for Machine Learning algorithms such a transformation is unnecessary, it should neither be harmful, and we continue with log transformed data.
+viewing duration is strongly right skewed and zero inflated (see Figure \ref{fig:fig3} in the Appendix). That means most households have a relatively low value of TV viewing duration but for a few households the viewing is relatively high. A log transformation makes the data more symmetric. Although in general for Machine Learning algorithms such a transformation is unnecessary, it should neither be harmful, and we continue with log transformed data. Because of many zero values we use the transformation 'log(x + 1)'.
 
 ```{r, echo = FALSE}
-# log transformation log(x + 1)
 pred.log <- cbind(predictors[, (1:2)], lapply(predictors[, -(1:2)] + 1, log))
 ```
 
@@ -273,17 +274,155 @@ x <- replicate(100, sample(1:5, nrow(hh.composition), replace = TRUE))
 round(mean(apply(x, 2, function(y) mean(y == hh.composition$hhsize))), 2)
 ```
 
-However, we know the probability of each household size category in our sample. And therefore can calculate a more precise estimate for the probability of classifying 
-a correctly by chance:
+However, we know the probability of each household size category in our sample:
 
 ```{r, echo = TRUE}
 p <- prop.table(table(hh.composition$hhsize))
-round(p*100, 2)
+c(hhsize = round(p*100, 2))
+```
+
+Therefore we can calculate the probability of correct classification by chance
+more precisely:
+
+```{r, echo = TRUE}
+round(sum(p^2), 2)
+```
+
+The estimation by simulation comes close:
+
+```{r, echo = TRUE}
 x <- replicate(100, sample(1:5, nrow(hh.composition), replace = TRUE, prob = p))
 round(mean(apply(x, 2, function(y) mean(y == hh.composition$hhsize))), 2)
 ```
 
-# Prediction
+
+## Partitioning into Train and Test Datasets
+
+The 2006 households are split into two datasets, one for training and one for 
+testing. The training data makes 60% of households and will be used to train the different models. The test data consists of the other 40% of households and will 
+be used to test how good the trained models perform on classifying new data.
+
+```{r, echo = TRUE, message = FALSE}
+library(caret)
+set.seed(999)
+train <- caret::createDataPartition(pred.log$hhsize, p = .6, list = FALSE)
+d <- list(train = pred.log[train,-1], test = pred.log[-train,-1])
+```
+
+A stratified random sampling is used to split the households. Stratification by 
+household size guarantees that the ration of each household size category is 
+equal between train and test data. 
+
+```{r, tab6, echo = FALSE}
+x <- cbind(`train n` = table(d$train$hhsize), `test n` = table(d$test$hhsize))
+x <- cbind(x, cbind(`train %` = x[,1]/sum(x[,1]), `test %` = x[,2]/sum(x[,2])))
+kable(round(x, 2), caption="\\label{tab:tab6} The 2006 household are split randomly into train (60%) and test (40%) data, with stratification by household size.")
+```
+
+# Model Specification
+
+## Multinomial Linear Model
+
+```{r, echo = TRUE, results = 'hide'}
+library(nnet)
+m.mnr <- multinom(hhsize ~ ., data = d$train, trace = TRUE, maxit = 500)
+```
+
+## Support Vector Machine
+
+```{r, echo = TRUE, message = FALSE}
+library(e1071)
+m.svm.linear <- svm(hhsize ~ ., data = d$train, kernel = "linear", cost = 1)
+m.svm.radial <- svm(hhsize ~ ., data = d$train, kernel = "radial", cost = 15, 
+                    gamma = 0.01)
+```
+
+## Random Forest
+
+```{r, echo = TRUE, message = FALSE}
+library(randomForest)
+m.rf <- randomForest(hhsize ~ ., data = d$train, imortance = TRUE, 
+                     strata = d$train$hhsize, 
+                     sampsize = rep(min(table(d$train$hhsize)), 5))
+```
+
+# Performance
+
+## Accuracy
+
+```{r, echo = TRUE}
+models <- list(
+  multinomial  = m.mnr, 
+  randomforest = m.rf, 
+  svm.linear   = m.svm.linear,
+  svm.radial   = m.svm.radial
+  )
+
+pred <- list(
+  train = as.data.frame(lapply(models, predict)),
+  test  = as.data.frame(lapply(models, predict, newdata = d$test))
+)
+
+calc.acc <- function(predicted, observed) mean(predicted == observed)
+
+tabl.acc <- rbind(
+  train = sapply(pred$train, calc.acc, observed = d$train$hhsize),
+  test  = sapply(pred$test,  calc.acc, observed = d$test$hhsize)
+)
+```
+
+```{r, tab7, echo = FALSE}
+kable(round(t(tabl.acc), 2), caption="\\label{tab:tab7} The Accuracy in train and test dataset for the different classifiers.")
+```
+
+## Cohen's Kappa
+
+```{r, echo = TRUE, message = FALSE}
+library(psych)
+calc.kappa <- function(predicted, observed, param) {
+  mx <- table(observed = observed, predicted = predicted)
+  cohen.kappa(mx)[[param]]
+}
+
+tabl.kappa <- rbind(
+  train = sapply(pred$train, calc.kappa, observed = d$train$hhsize, 'weighted.kappa'),
+  test  = sapply(pred$test,  calc.kappa, observed = d$test$hhsize, 'weighted.kappa')
+)
+```
+
+```{r, tab8, echo = FALSE}
+kable(round(t(tabl.kappa), 2), caption="\\label{tab:tab8} Cohren's weighted Kappa in train and test dataset for the different classifiers.")
+```
+
+## Confusion Matrix
+
+Cohen's kappa takes into account the the probability of chance of each category.
+It is somewhat more 
+
+Cohen's weighted kappa punishes disagreement more as further appart the categories lie. For example, incorrectly classifying a household of size 1 as 5 is worse than 2.
+Using weighted kappa is somwhat contradicting to our earlier statement to interpret
+household size not as an ordered scale.
+
+```{r, echo = TRUE, message = FALSE}
+agree <- list(
+  train = lapply(pred$train, calc.kappa, observed = d$train$hhsize, 'agree'),
+  test  = lapply(pred$test,  calc.kappa, observed = d$test$hhsize, 'agree')
+)
+agree <- do.call(rbind, lapply(agree$test, as.data.frame))
+agree$model <- sub('\\.\\d+', '', rownames(agree))
+names(agree)[3] <- 'agreement'
+```
+
+```{r, fig7, echo = FALSE, message = FALSE, fig.pos="H", fig.cap="\\label{fig:fig7} Heatmaps of Cohen's agreement matrix for each model"}
+library(ggplot2)
+ggplot(agree, aes(observed, predicted, agreement)) + 
+  geom_tile(aes(fill = agreement)) + theme_bw() + facet_grid( ~ model)
+```
+
+
+
+# Discussion
+
 
 # Appendix
 
