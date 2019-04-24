@@ -194,10 +194,6 @@ rf <- randomForest(
   strata = d$train$hhsize, sampsize = rep(min(table(d$train$hhsize)), 5) # 67
 )
 
-plot(rf, main = 'Error rate vs number of trees', col = c(8,1:5))
-legend(400, 0.7, c('overall OOB', paste('hhsize', 1:5)), bty = 'n', 
-       fill = c(8,1:5))
-
 performance.rf <- list(
   train = list(
     accuracy = mean(d$train$hhsize == predict(rf)),
@@ -217,11 +213,11 @@ plot(rf, main = 'Error rate vs number of trees', col = c(8,1:5))
 legend(400, 0.7, c('overall OOB', paste('hhsize', 1:5)), bty = 'n', 
        fill = c(8,1:5))
 
-varImpPlot(rf)
+varImpPlot(m.rf)
 
-partialPlot(rf, d$train, x.var = "chn_kids")
+partialPlot(m.rf, d$train, x.var = "chn_kids")
 for (i in 2:5)
-  partialPlot(rf, d$train, x.var = "chn_kids", add = TRUE, col = i,
+  partialPlot(m.rf, d$train, x.var = "chn_kids", add = TRUE, col = i,
               which.class = levels(d$train$hhsize)[i]
   )
 

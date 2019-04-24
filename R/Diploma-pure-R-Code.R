@@ -46,6 +46,15 @@ legend('topleft', paste('hhsize', 1:5), pch = 21, bty = 'n',
 fun(pred.log[, vars$channel], main = 'Clusters of hhsize')
 fun(pred.log[, vars$program])
 
+# --- corelation matrix -------------------------------------------------------
+
+x <- pred.log[, -1]
+x$hhsize <- as.integer(x$hhsize)
+heatmap(y <- cor(x))
+
+z <- sort(y['hhsize', -match('hhsize', colnames(y))])
+z[c(which.max(z), which.min(z))]
+
 # --- PCA ---------------------------------------------------------------------
 
 pca <- prcomp(pred.log[,-(1:2)], center = TRUE, scale. = TRUE)
@@ -104,9 +113,11 @@ m.svm.radial <- svm(hhsize ~ ., data = d$train, kernel = "radial", cost = 15,
                     gamma = 0.01)
 
 library(randomForest)
+set.seed(7)
 m.rf <- randomForest(hhsize ~ ., data = d$train, imortance = TRUE, 
                      strata = d$train$hhsize, 
-                     sampsize = rep(min(table(d$train$hhsize)), 5))
+                     sampsize = rep(min(table(d$train$hhsize)), 5) * .7
+                     )
 
 # --- performance -------------------------------------------------------------
 
@@ -160,4 +171,76 @@ ggplot(agree, aes(observed, predicted, agreement)) +
   theme_bw() +
   facet_grid( ~ model)
 
+# --- Model Search ------------------------------------------------------------
+
+require(MASS)
+
+# m.mnr.best <- MASS::stepAIC(m.mnr)
+# save(m.mnr.best, file = './data/stepAIC.RData')
+load('~/git/diploma/data/stepAIC.RData')
+m.mnr.best <- res
+
+x <- data.frame(
+  c(m.mnr$AIC, m.mnr.best$AIC),
+  c(length(colnames(coef(m.mnr))[-1]), length(colnames(coef(m.mnr.best))[-1]))
+)
+dimnames(x) <- list(c('full model','best model'), c('AIC','Terms'))
+
+anova(m.mnr.best, m.mnr, test = 'Chisq')
+
+# m.mnr.best2 <- MASS::stepAIC(m.mnr, scope = . ~ .^2, direction = 'forward')
+
+# --- Variance Importance -----------------------------------------------------
+
+m <- list(multinom.full = m.mnr, multinom.best = m.mnr.best, randomforest = m.rf)
+par(mfrow = c(1,3))
+for(i in names(m)){
+  vars <- caret::varImp(m[[i]])
+  vars <- setNames(vars[[1]], rownames(vars))
+  dotchart(tail(sort(vars), 15), main = i)
+}
+
+plot(m.rf, main = 'Error Rate by Tree Iteration', col = c(8,1:5))
+legend('topright', c('overall OOB', paste('hhsize', 1:5)), bty = 'n', fill = c(8,1:5))
+
+# --- Partial Plot ------------------------------------------------------------
+
+classes <- levels(d$train$hhsize)
+impvar  <- c("chn_kids", "prg_news","chn_generalistpublic", "day_workday_17to20","prg_commercial")
+for(j in seq_along(impvar)){
+  png(paste0('~/git/diploma/data/partialplot.rf.',impvar[j],'.png'))
+  h <- lapply(classes, function(x) partialPlot(m.rf, d$train, impvar[j], x, plot = FALSE))
+  y.lim <- range(lapply(h, `[[`, 'y'))
+  partialPlot(m.rf, d$train, impvar[j], classes[1], ylim = y.lim, xlab = impvar[j],
+              main = paste("Partial Dependence on", impvar[j]), rug = FALSE)
+  for (i in 2:5) 
+    partialPlot(m.rf, d$train, impvar[j], classes[i], col = i, rug = FALSE, add = TRUE)
+  legend('topright', paste('hhsize', 1:5), bty = 'n', lty = 1, col = 1:5, horiz = TRUE, cex = .8)
+  dev.off()
+}
+
+partialPlot(m.rf, d$train, 'prg_commercial')
+
+library(effects)
+e <- setNames(lapply(impvar, Effect, m.mnr), impvar)
+
+# for(j in seq_along(e)){
+#   png(paste0('~/git/diploma/data/partialplot.mnr.', names(e)[j],'.png'))
+#   plot(e[[j]], multiline = TRUE, colors = 1:5)
+#   dev.off()
+# }
+
+j <- 5
+png(paste0('~/git/diploma/data/partialplot.mnr.', names(e)[j],'.png'))
+plot(e[[j]], multiline = TRUE, colors = 1:5)
+dev.off()
+
+# lapply(e, plot, multiline = TRUE, colors = 1:5)
+
+# --- log odds of hhsize by a specific predictor ------------------------------
+
+pred.prob <- predict(m.mnr, type="probs", newdata=d$test)
+round(head(pred.prob), 3)
+
+rowSums(pred.prob)
 
