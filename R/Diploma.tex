@@ -124,7 +124,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{24 April 2019}
+    \date{25 April 2019}
 
 \usepackage{float}
 
@@ -139,23 +139,24 @@
 \section{Summary}\label{summary}}
 
 In this study TV viewing data from individuals was aggregated to
-household level to find out if the household size can be predicted based
-on the households TV viewing. This simulates the obstacle that has to be
-mastered when RPD data has to be integrated with traditional panel data.
-For each home the average daily viewing duration in seconds across an 8
-week period was extracted for 53 different features such as daytime,
-weekday, type of channel and program genre. The sample of 2006 homes
-were split by a ratio of 6:4 and used for training and cross validating,
-respectively. Three different machine learning algorithms were applied,
-multinomial linear regression, support vector machine and random forest.
-All three classifier performed similarly poor on test data with an
-overall accuracy of 42\% to 44\%, given a baseline accuracy of 27\%.
-Separating small (household size 1 and 2) versus bigger homes (household
-size 3, 4 and 5) was the main pattern found and features like viewing on
-kids channel and kids programs among others was found to be particularly
-important. We conclude that a households TV consumption is not
-informative enough to derive the number of individuals living in that
-home.
+household level to test if the number of individuals in the household
+can be predicted based on the households TV viewing data. This situation
+simulates one particular obstacle when merging RPD data with traditional
+panel data. For each home the average daily viewing duration across an 8
+week period was extracted and 53 different features of viewing behavior
+were derived such as daytime, weekday, type of channel or program genre.
+The sample of 2006 homes were split by a ratio of 6:4 and used for
+training and cross validating, respectively. Three different machine
+learning algorithms were used to compete each other for best prediction
+of household size. The results showed that all 3 classifier, multinomial
+linear regression, support vector machine and random forest, performed
+similarly poor on test data with an overall accuracy of 42\% to 44\%,
+given a baseline accuracy of 27\%. Separating small (household size 1
+and 2) versus bigger homes (household size 3, 4 and 5) was the main
+pattern found and features like viewing on kids channel and kids
+programs among others was found to be particularly important. We
+conclude that TV viewing behavior is not informative enough to reliably
+derive the number of individuals living in a household.
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -167,47 +168,47 @@ of roughly 2000 households is constantly under
 \href{https:://www.mediapulse.ch/en/tv/research-method/the-measuring-technique.html}{measurement}.
 These homes were carefully selected by a complex sampling design and all
 household members have agreed to be part of the study. The TV viewing of
-each household member is individually recorded and detailed demographics
-are known for each person. This allows the market to target TV audiences
-by relevant characteristics like age gender and many more.
+each household member is individually recorded. For each home and
+individual detailed demographics are surveyed which allows the market to
+target TV audiences by relevant characteristics like age gender and many
+more.
 
-One issue with the panel approach is poor granularity. That means
-sometimes the system can not provide any audience figures for a specific
-channel or airtime. It is likely that in the Swiss population of about
-3.5 million households at least a few people are watching even exotic
-programs at exotic times of the day. However, out of a panel of 2000
-households chances are high that no one was watching that content. This
-is not a bias of the measurement but poor resolution.
+A disadvantage of the panel approach is its poor granularity. Especially
+for small TV channels or unpopular daytimes chances are high that no
+person in the panel was watching TV. Such zero-ratings are a problem for
+analyzing program success, optimizing program schedules or prizing
+commercial time. Most likely, a few people in the Swiss population
+(\textasciitilde{}3.5 million households) are always watching even small
+channels at unpopular times of the day. A panel of 2000 homes is just
+not sensitive enough to capture all TV viewing behavior. This is not a
+bias of the system but poor resolution. Increasing the panel size is
+very expensive and inefficient.
 
 A solution to this problem could be the inclusion of third party data.
 Set-Top-Boxes (STB) of TV-provider (Swisscom, UPC, etc.) are
-automatically recording the TV consumption in millions of Swiss homes
-and the data is returned to the providers servers (return path data,
-RPD). There are still many issues with these data that are currently
-addressed.
+automatically recording the TV consumption in millions of homes in
+Switzerland every day and returned and stored on the providers servers
+(return path data, RPD). There are still many issues with these data
+that are currently addressed. One issue of RPD is that the viewing is
+recorded on household level, not on individual level like the Mediapulse
+TV-panel. Also almost no demographic information is surveyed from those
+homes. Household-level data is of little use to the market because it
+gives no insight in target groups based on age and gender and alike.
 
-One major issue of RPD is that the viewing data is on household level,
-not on individual level. Household-level data is of little use to the
-market. Because it gives no insight in target groups based on age and
-gender and alike.
+To integrate RPD data into panel data means to split up household
+viewing statements to individual viewing statements and assign
+demographics variables like age and sex. A first step to investigate the
+feasibility of such data fusion is to predict the number of individuals
+in a household based on the only available information, the household's
+TV viewing data.
 
-It is unlikely that RPD provider will ever measure the individual
-viewing or survey individual demographics within the subscribers homes.
-Apart from region code, the only information about the home is the
-viewing data itself. So the question arises if it is possible to predict
-the household composition based on viewing behavior.
-
-The aim of this study is to explore the possibility to predict the
-household composition within a household using TV viewing data. It seems
-to be a two-step-problem, first to find the number of household members
-and then to assign age and gender to the individuals.
-
-We will use the \emph{Mediapulse TV-Panel} and its viewing data to study
-the subject. For all households in the panel its composition including
-household size and age and sex of each person is known. For each panel
-home the viewing data will be aggregated to household level. Different
-supervised machine learning algorithms will be fed with features
-extracted from that household viewing data.
+In this study we will use Mediapulse TV-panel data to investigate to
+predict the household size by TV viewing behavior. First the panel data
+is aggregated from individual level to household level. For each
+household and a 8 week period different features of TV viewing behavior
+is extracted. Different supervised machine learning algorithms are
+competing for best prediction of the household size. The true household
+size for each home of the Mediapulse TV-panel is of course known.
 
 \hypertarget{tv-viewing-data}{%
 \section{TV Viewing Data}\label{tv-viewing-data}}
@@ -228,15 +229,14 @@ There are three types of files:
 \end{enumerate}
 
 A commercial software allows to analyse this data via an easy to use
-software tool. The output of this Software is the official Swiss TV
-audience measure published by Mediapulse AG and accepted by the market.
-I have written an R-package that allows to read and analyse the very
-same input raw-data and output the very same results (e.g.~daily
-estimates, the so called ``Facts'' like \emph{Reach}, \emph{Rating} or
-\emph{Share}, etc.). The fact that the results between Software and
-R-package match precisely, guarantees that the data processing in R is
-correct, plus it allows to check if all calculations and aggregations
-are correctly implemented as intended.
+software tool. The output of this software is the official Swiss TV
+audience measure published by Mediapulse AG. A in-house developed
+R-package allows to read and analyse the raw-data and output the very
+same results (e.g.~daily estimates, the so called ``Facts'' like
+\emph{Reach}, \emph{Rating} or \emph{Share}, etc.). The fact that the
+results between software and R-package match precisely, guarantees that
+the data processing in R is correct, plus it allows to check if all
+calculations and aggregations are implemented as intended.
 
 \begin{longtable}[]{@{}lrrlll@{}}
 \caption{\label{tab:tab1}TV viewing raw-data (simplified). Reading
@@ -263,9 +263,9 @@ Demographic information is simply joined on keys \texttt{day},
 \texttt{hh} and \texttt{ind}. Program schedule is joined via an overlap
 join on keys \texttt{day}, \texttt{channel} and
 \texttt{start}/\texttt{end}. If a viewing statement overlaps with
-multiple programs, the statement gets duplicated and the
-\texttt{start}/\texttt{end} intervals needs to be cropped to the viewing
-interval boundaries.
+multiple programs, the statement gets copied and with
+\texttt{start}/\texttt{end} points cropped to the viewing interval
+boundaries.
 
 \hypertarget{target-and-feature}{%
 \section{Target and Feature}\label{target-and-feature}}
@@ -277,7 +277,7 @@ Composition}\label{target-household-composition}}
 The aim of this study is to predict the household composition in form of
 the household size, e.g.~the number of people living in the household.
 Our sample for this study comprises 2006 homes in which a total of 4388
-individuals are living in. This gives an average household size of 2.19.
+individuals are living in (average household size is 2.19).
 
 The variable \emph{hhsize} is given in the demographics file of the TV
 raw-data. \emph{hhsize} is not necessarily equal to the sum of
@@ -334,14 +334,14 @@ Data}\label{selecting-8-weeks-of-viewing-data}}
 For this study, a sample day was fixed, and the viewing data of all
 panel member present at that day is collected 4 weeks prior and 4 weeks
 after that date. The sample day is the Sunday \texttt{2017-11-12} and
-comprises 2006 households and 4388 individuals respectively.
+comprises 2006 households and 4388 individuals, respectively.
 
-The period of eight weeks should be long enough to reflect individual
+The period of 8 weeks should be long enough to reflect individual
 viewing behavior. Autumn was chosen because during colder months people
 are watching more TV than in Summer. This period is free of holidays or
-unusual TV events (FIFA World cup, etc.). Within the 7 * 8 = 56 days,
-the weekdays Mondays to Sundays are balanced. This is relevant as TV
-viewing differs significantly between weekends and workdays (Figure
+unusual TV events (FIFA World Cup, etc.). Within the 7 * 8 = 56 days,
+the weekdays Mondays to Sundays are balanced. This is important as TV
+viewing differs significantly between weekends and workdays (see Figure
 \ref{fig:fig1}).
 
 \hypertarget{tv-viewing-on-household-level}{%
@@ -354,18 +354,18 @@ case. RPD data only provide viewing data on household level. Which
 person, or how many person are sitting in front of the TV set is
 unknown. Also, there is no demographic information accompanying RPD
 data. Here we study if it is possible to predict at least the number of
-household members if only TV viewing on household level is known, like
-with RPD data. To this end the \emph{Mediapulse TV data} have to be
-aggregated form individual level to household level. This means, if more
-than one person is watching the same content, on household level, this
-is reflected by a single viewing statement. This household aggregation
-algorithm is somewhat more complex, but not relevant here.
+household members if only the home's TV viewing data is available. To
+this end the \emph{Mediapulse TV data} have to be aggregated form
+individual level to household level. This means, if more than one person
+is watching the same content, on household level, this is reflected by a
+single viewing statement. This household aggregation algorithm is
+somewhat more complex, but not detailed here.
 
 \hypertarget{feature-generation}{%
 \subsubsection{Feature Generation}\label{feature-generation}}
 
 Features are a set of variables that are used as input data for Machine
-Learning Classifiers or as predictors for statistical models. In both
+Learning classifiers or as predictors for statistical models. In both
 cases we aim to predict the target variable \emph{hhsize}. To create
 features of viewing behavior the TV data on household level is summed up
 for each household and day, by different characteristics. Then, for each
@@ -406,12 +406,11 @@ illustrating the effect of the dimension \emph{time} on total TV
 viewing.
 
 There are over 300 TV channels received in Switzerland. In comparison to
-other countries this so called \emph{inspill} is very large. Because of
-the small size of Switzerland and its different linguistic regions there
-are many foreign channels being watched from the neighboring countries.
-For simplification the channels have been mapped to channel groups.
-There are 3 type of groups: channel type, language, and country of
-origin.
+other countries this so called \emph{inspill} is substantial. Because of
+the country's small size and its different linguistic regions there are
+many channels from neighboring countries watched in Switzerland. For
+simplification the channels have been mapped to channel groups. There
+are 3 type of groups: channel type, language, and country of origin.
 
 The program genre is a pre-specified variable in the program schedule
 files. Each program is categorized to one of the 14 different genres.
@@ -488,15 +487,14 @@ day\_weekend\_08to11\tabularnewline
 \subsection{Classification versus
 Regression}\label{classification-versus-regression}}
 
-Theoretically household size can be interpret both as five separate
-categories or as a scale (ordinal or proportional) ranging from 1 to 5.
-For this study we interpret household size as categorical variable and
+Theoretically household size can be interpret both as categorical or as
+ordinal scale. For this study we prefer the categorical case and
 therefor apply classification not regression. One reason is that behind
-a specific household size very different types of household compositions
-may exist. For example a two person household could consist of an
-elderly couple, a two young students of the same gender, a single parent
-with a child, etc. Accordingly the TV viewing behavior in households of
-the same size may differ significantly given the possible variety of
+a specific household size very different compositions of individuals are
+possible. For example, a 2-person-household may consist of an elderly
+couple or a two young students of the same gender or a single parent
+with one child, etc. Accordingly, the TV viewing behavior in households
+of the same size may differ significantly given the possible variety of
 demographics profiles.
 
 \hypertarget{log-transformation}{%
@@ -504,13 +502,13 @@ demographics profiles.
 
 Screening through the values of the 53 feature variables reveals that
 often the viewing duration is strongly right skewed and zero inflated
-(see Figure \ref{fig:fig3} in the Appendix). That means most households
-have a relatively low value of TV viewing duration but for a few
-households the viewing is relatively high. A log transformation makes
-the data more symmetric. Although in general for Machine Learning
-algorithms such a transformation is unnecessary, it should neither be
-harmful, and we continue with log transformed data. Because of many zero
-values we use the transformation `log(x + 1)'.
+(Appendix, Figure \ref{fig:fig3}). That means most households have a
+relatively low value of TV viewing duration but for a few households the
+viewing is relatively high. A log transformation makes the data more
+symmetric. Although in general for Machine Learning algorithms such a
+transformation is not necessary, it should neither be harmful and we
+continue with log transformed data. Because of many zero values we use
+the transformation `log(x + 1)'.
 
 \hypertarget{visualization-of-features}{%
 \subsection{Visualization of Features}\label{visualization-of-features}}
@@ -519,47 +517,48 @@ Before applying statistical methods, we can simply visually explore if
 there is a predictor variable that separates well the households by
 household size. Figure \ref{fig:fig4} in the Appendix shows some
 examples. For most features there is no such discrimination power
-apparent. But the amount of viewing kinds channels seems to separate
+apparent. But the amount of viewing kids channels seems to separate
 small and bigger households.
 
 Another option is to visualize the correlation between feature and
 between features and the target variable. Figure \ref{fig:fig5} in the
 Appendix shows a heat map of the correlation matrix of the input data.
 The correlation is a standardized measure for the similarity between
-features between. The correlation with the target variable reflects how
-strong a linear relation ship exists between a particular feature and
-household sizes 1 to 5. This is only of limited use as we're also
-interested in any non-linear relation with the five household sizes
-which we interprets as nominal classes here.
-
-The dendrogram attached to the heat map in Figure \ref{fig:fig5} uses
-the correlation structure to visualize the between-features association
-in a hierarchical order.
+features. The correlation with the target variable reflects how strong a
+linear relation ship exists between a particular feature and household
+sizes 1 to 5. This is only of limited use as we're also interested in
+any non-linear relation with the five household sizes which we
+interprets as nominal classes here. The dendrogram attached to the heat
+map in Figure \ref{fig:fig5} uses the correlation structure to visualize
+the between-features association in a hierarchical order.
 
 \hypertarget{dimensionality-reduction}{%
 \subsection{Dimensionality Reduction}\label{dimensionality-reduction}}
 
-The 53 features are not a lot and far less than the 2006 observations.
-Still, some of these variables may not carry much information or they
-are redundant to other variables (e.g.~highly correlated). For an
-example of dimensionality reduction Principal Component Analysis (PCA)
-was chosen. PCA was calculated using the `prcomp' package with centering
-but no scaling of the log transformed data matrix. All the features
-represent the same unit of viewing duration. Figure \ref{fig:fig6} and
+Fifty three features are not a lot and definitely far less than the 2006
+observations. Still, some of these variables may not carry much
+information or they are redundant to other variables (e.g.~highly
+correlated). For an example of dimensionality reduction Principal
+Component Analysis (PCA) was chosen. PCA was calculated using the
+`prcomp' package with centering but no scaling of the log transformed
+data matrix. All the features represent the same unit (log of viewing
+duration n seconds) of comparable magnitude. Figure \ref{fig:fig6} and
 \ref{fig:fig7} in the Appendix shows the results of the PCA.
 
-If PCA finds a few principal components that together explain a big
-portion of the total variance, these synthesized features could replace
-the original input data. The whole effects on the target variable could
-be summarized by 2 or 3 (orthogonal) dimensions.
+If PCA finds a few principal components which together explain a
+substantial portion of the total variance, these synthesized features
+could used instead of the original high dimensional input data. Then an
+structure between predictor and target may be described along only 2 or
+3 orthogonal axes.
 
 However, Figure \ref{fig:fig6} shows no such simple decomposition. There
 is a dominant first component explaining 30\% of the variance. Most
 likely this component reflects the magnitude of overall TV consumption.
-All following components only explain a fraction. To reach a cumulative
-proportion of about 80\% more than ten components are needed. Given the
-general difficulty of a real-world interpretation of PCs, working with
-the PCA transformed data is of little use here.
+To reach a cumulative proportion of about 80\% more than 10 components
+are needed. Given the general difficulty of a real-world interpretation
+of PCs, working with the PCA transformed data is of little use here. In
+contrast it shows that the features are heterogeneous and therefore well
+chosen.
 
 \begin{longtable}[]{@{}lrrr@{}}
 \caption{\label{tab:tab5} First 6 PCs. The Variance in the feature
@@ -665,8 +664,8 @@ how good the trained models perform when classifying new data.
 
 A stratified random sampling is used to split the households.
 Stratification by household size guarantees that the distribution of
-household size is the same between train and test data. So the cross
-validation is more reliable.
+household size remains the same between train and test data and therefor
+the cross validation is more reliable.
 
 \begin{longtable}[]{@{}lrrrr@{}}
 \caption{\label{tab:tab6} The 2006 household are split randomly into
@@ -698,7 +697,7 @@ Regression}\label{multinomial-logistic-regression}}
 \hypertarget{full-model}{%
 \subsubsection{Full Model}\label{full-model}}
 
-The multinomial logistic regression models the log odds of the five
+The multinomial logistic regression models the log odds of the 5
 household size levels as a linear combination of the predictor
 variables. We will use the full model with all features when assessing
 the prediction performance.
@@ -716,9 +715,9 @@ the prediction performance.
 In contrast to Machine Learning algorithms (ML), a statistical model
 describes the relationship between predictors and outcome variable as a
 mathematical formula. That equation is fitted to the data in the best
-possible way. However if the formula does not describe the true
-relationship the result remains sub optimal. There are many possible
-ways of specifying a model, including transformation of predictors
+possible way. However, if the formula does not describe the true
+relationship the result remains suboptimal. There are many possible ways
+of specifying a model, including transformation of predictors
 (non-linear relationship) and specification of interactions between
 predictors (depending on the state of other predictors). To find the
 best model in statistical terms, all models have to be fitted and
@@ -730,7 +729,7 @@ each additional model term.
 
 Each model is basically a hypothesis fitted and tested against the data.
 Running through all possible models to approach the best one is
-cumbersome and time consuming If the true relationship between
+cumbersome and time consuming. If the true relationship between
 predictors and outcome variable is not among our pre-defined set of
 models we will not find the optimum and prediction will be sub optimal.
 But the advantage over ML is that once a satisfying model is found, the
@@ -778,17 +777,17 @@ reduced model. This is expected from the the AIC stepwise model search.
 
 Each household has a vector of 53 feature values. Let's interpret the
 input data as a 53 dimensional space in which the 2006 households are
-located. Support Vector Machine constructs hyperplanes that separate the
-households by household size. It is a binary classifier, with 5 more
-than two classes it runs through all each time separating one against
-all others. Usually there is no perfect separation, some households
-still lie on the other side of the hyperplane. The best separation out
-of many possible solutions is chosen to be the one with the biggest
-distance to the closest points. Points within this margin and beyond the
-hyperplane are penalized as further apart they are located (hinge loss).
-Tuning the error distance with high costs, tends to improve the
-classification on training data with the risk of overfitting and bad
-classification on new data, et vice versa.
+located. Support Vector Machine iteratively constructs hyperplanes that
+separate the households by household size. It is a binary classifier.
+With 5 classes SVM runs through all classes, each time separating one
+against all others. The best separation out of many possible solutions
+the closest points to the hyperplane build the biggest margin. Usually
+there is no perfect separation and a few households are located on the
+wrong side of the hyperplane. Points within the margin and beyond are
+penalized as further apart they are located (hinge loss). Tuning the
+error distance with high costs, tends to improve the classification on
+training data with the risk of overfitting and bad classification on new
+data, et vice versa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -826,26 +825,26 @@ not necessarily beneficial for prediction accuracy on new data.
 
 A decision tree is an iterative partitioning of the input data. For each
 feature the best binary split is found so that in the subsets the
-occurrence of the\\
-of household size classes is as homogeneous as possible. The feature
-with the best split serves as the first node to split the input data.
-For each subset the procedure is repeated resulting in a tree like
-partitioning. For prediction, new data is run through the very same
-decision rules. The end leafs of the tree represent the final decisions
-to which class a new case belongs to. The end leaf might not be pure,
-not allowing a deterministic decision for one or the other household
-size class, so the majority class from training is taken. Such a single
-tree models very specific patterns and has a high risk of overfitting.
+occurrence of the of household size classes is as homogeneous as
+possible. Among a subset of all features the one with the best split is
+chosen on each node. For each subset the procedure is repeated resulting
+in a tree like partitioning. For prediction, new data is run through the
+very same decision rules. The end leafs of the tree represent the final
+decisions to which class a new case belongs to. The end leaf might not
+be pure, not allowing a deterministic decision for one or the other
+household size class, so the majority class from training is taken. Such
+a single tree models very specific patterns and has a high risk of
+overfitting.
 
-Random forest averages the results of many trees. For each tree only a
-random subset of observations is used. This bootstrapping increases bias
-and reduces variance in each tree, making the final average more
-accurate for predicting new data. The aggregation across trees is only
-beneficial for accuracy gain if the trees are independent among each
-other. At each node the splitting variable is chosen from a random
-subsample of all features, introducing some degree of independence among
-the trees. Figure \ref{fig:fig10} shows the out of box (OOB) error rate
-across the 500 trees that were calculated.
+Random forest averages the results across many trees. For each tree only
+a random subset of observations is used. This bootstrapping increases
+bias and reduces variance in each tree, making the average more accurate
+for predicting new data. The aggregation across trees is only beneficial
+for accuracy gain if the trees are independent among each other. At each
+node the splitting variable is chosen from a random subsample of all
+features, introducing some degree of independence among the trees.
+Figure \ref{fig:fig10} shows the out of box (OOB) error rate across the
+500 trees that were calculated.
 
 Because the five household size classes or not uniformly distributed we
 instruct the Random Forest algorithm to use a stratified subsample for
@@ -875,7 +874,7 @@ Because this formula ignores the different frequencies of household size
 classes, the accuracy on small households are more influential in this
 overall score. A score of 1 (or 100\%) means perfect match, 0 or (0\%)
 not a single match. A random matching process would generate an accuracy
-of .27 (or 27\%), as outlined above.
+of .27 (or 27\%), as outlined before
 
 The accuracy on training set is the model fit. More important is the
 cross validation with test data. If a trained model performs well on new
@@ -927,8 +926,8 @@ agreement.
 
 Cohen's weighted kappa punishes disagreement more as further apart the
 categories lie from each other. For example, incorrectly classifying a
-household of size 1 as 5 is worse than 2. Weighted kappa makes is useful
-if the target variable is seen as an ordinal scale.
+household of size 1 as 5 is worse than classifying it as size 2.
+Weighted kappa suggests to interpret household size as ordinal scale.
 
 \begin{longtable}[]{@{}lrr@{}}
 \caption{\label{tab:tab8} Cohen's weighted Kappa in train and test
@@ -974,8 +973,8 @@ chosen for splitting (MeanDecreaseGini). For the multinomial logistic
 model the variance importance is sassed by the sum over the four
 absolute coefficients (there are 4 coefficients for 5 classes, household
 size 1 being the reference class). Although unbalanced, all five classes
-get the same weight for the overall importance in both the MLR and RF
-importance measure.
+get the same weight for the overall importance in both the multinomial
+logistic model and Random Forest importance measure.
 
 Figure \ref{fig:fig9} in the Appendix shows the 15 most important
 variables for the two multinomial logistic models and Random Forest. The
@@ -984,7 +983,7 @@ model. This no surprise, as the stepwise model selection keeps important
 terms and drops irrelevant terms.
 
 Overall, the set of important variables between Random Forest and
-Multinomial Model is quite similar, although the magnitude of importance
+multinomial model is quite similar, although the magnitude of importance
 differs substantially. Features of all the domains time, channels and
 programs are represented in the lists. Most significant difference are
 commercial programs and foreign channels that seem important for MNL but
@@ -992,11 +991,11 @@ not or Random Forest. For Random Forest viewing children channels and
 programs is the most important feature for discriminating household
 size.
 
-One reason for differences may be that Multinomial regression did not
+One reason for differences may be that multinomial regression did not
 model any interaction terms between features. The iterative binary
 partitioning by Random Forest on the other hand is able to model all
-possible interactions if opportune. But such interactions may differ
-form tree to tree and is not described mathematically. However we can
+possible interactions if opportune. Such interactions may differ form
+tree to tree and is not described mathematically. However we can
 visualize the overall relationship between two variables by partial
 dependence plot.
 
