@@ -15,7 +15,7 @@ header-includes: \usepackage{float}
 
 # Summary
 
-In this study TV viewing data from individuals was aggregated to household level to test if the number of individuals in the household can be predicted based on the households TV viewing data. This situation simulates one particular obstacle when merging RPD data with traditional panel data. For each home the average daily viewing duration across an 8 week period was extracted and 53 different features of viewing behavior were derived such as daytime, weekday, type of channel or program genre. The sample of 2006 homes were split by a ratio of 6:4 and used for training and cross validating, respectively. Three different machine learning algorithms were used to compete each other for best prediction of household size. The results showed that all 3 classifier, multinomial linear regression, support vector machine and random forest, performed similarly poor on test data with an overall accuracy of 42% to 44%, given a baseline accuracy of 27%.
+In this study television (TV) viewing data from individuals was aggregated to household level to test if the number of individuals in the household can be predicted based on the households TV viewing data. This situation simulates one particular obstacle when merging RPD data with traditional panel data. For each home the average daily viewing duration across an 8 week period was extracted and 53 different features of viewing behavior were derived such as daytime, weekday, type of channel or program genre. The sample of 2006 homes were split by a ratio of 6:4 and used for training and cross validating, respectively. Three different machine learning algorithms were used to compete each other for best prediction of household size. The results showed that all 3 classifier, multinomial linear regression, support vector machine and random forest, performed similarly poor on test data with an overall accuracy of 42% to 44%, given a baseline accuracy of 27%.
 Separating small (household size 1 and 2) versus bigger homes (household size 3, 4 and 5) was the main pattern found and features like viewing on kids channel and kids programs among others was found to be particularly important. We conclude that TV viewing behavior is not informative enough to reliably derive the number of individuals living in a household.
 
 # Introduction 
@@ -288,7 +288,7 @@ anova(m.mnr.best, m.mnr, test = 'Chisq')
 
 ### linear
 
-Each household has a vector of 53 feature values. Let's interpret the input data as a 53 dimensional space in which the 2006 households are located. Support Vector Machine iteratively constructs hyperplanes that separate the households by household size. It is a binary classifier. With 5 classes SVM runs through all classes, each time separating one against all others. The best separation out of many possible solutions the closest points to the hyperplane build the biggest margin. Usually there is no perfect separation and a few households are located on the wrong side of the hyperplane. Points within the margin and beyond are penalized as further apart they are located (hinge loss). Tuning the error distance with high costs, tends to improve the classification on training data with the risk of overfitting and bad classification on new data, 
+Each household has a vector of 53 feature values. Let's interpret the input data as a 53 dimensional space in which the 2006 households are located. Support Vector Machine (SVM) iteratively constructs hyperplanes that separate the households by household size. It is a binary classifier. With 5 classes SVM runs through all classes, each time separating one against all others. The best separation out of many possible solutions the closest points to the hyperplane build the biggest margin. Usually there is no perfect separation and a few households are located on the wrong side of the hyperplane. Points within the margin and beyond are penalized as further apart they are located (hinge loss). Tuning the error distance with high costs, tends to improve the classification on training data with the risk of overfitting and bad classification on new data, 
 et vice versa.
 
 ```{r, echo = TRUE, message = FALSE}
@@ -316,7 +316,7 @@ represent the final decisions to which class a new case belongs to. The end leaf
 
 Random forest averages the results across many trees. For each tree only a random subset of observations is used. This bootstrapping increases bias and reduces variance in each tree, making the average more accurate for predicting new data. The aggregation across trees is only beneficial for accuracy gain if the trees are independent among each other. At each node the splitting variable is chosen from a random subsample of all features, introducing some degree of independence among the trees. Figure \ref{fig:fig10} shows the out of box (OOB) error rate across the 500 trees that were calculated.
 
-Because the five household size classes or not uniformly distributed we instruct the Random Forest algorithm to use a stratified subsample for each tree. 
+Because the five household size classes are not uniformly distributed we instruct the Random Forest algorithm to use a stratified subsample for each tree. 
 
 ```{r, echo = TRUE, message = FALSE}
 library(randomForest)
@@ -405,13 +405,13 @@ agree$model <- sub('\\.\\d+', '', rownames(agree))
 names(agree)[3] <- 'agreement'
 ```
 
-## Variance Importance
+## Variable Importance
 
-To asses which features are most important for the prediction of household size, the variance importance was calculated. For Random Forest the variance importance for a particular variable is the average score improvement across all nodes and all trees where that variable was chosen for splitting (MeanDecreaseGini). For  the multinomial logistic model the variance importance is sassed by the sum over the four absolute coefficients (there are 4 coefficients for 5 classes, household size 1 being the reference class). Although unbalanced, all five classes get the same weight for the overall importance in both the multinomial logistic model and Random Forest importance measure.
+To asses which features are most important for the prediction of household size, the variable importance was calculated. For Random Forest the variable importance for a particular variable is the average score improvement across all nodes and all trees where that variable was chosen for splitting (MeanDecreaseGini). For  the multinomial logistic model the variable importance is assessed by the sum over the four absolute coefficients (there are 4 coefficients for 5 classes, household size 1 being the reference class). Although unbalanced, all five classes get the same weight for the overall importance in both the multinomial logistic model and Random Forest importance measure.
 
 Figure \ref{fig:fig9} in the Appendix shows the 15 most important variables for the two multinomial logistic models and Random Forest. The reduced multinomial model shows almost identical ranking as the full model. This no surprise, as the stepwise model selection keeps important terms and drops irrelevant terms.
 
-Overall, the set of important variables between Random Forest and multinomial model is quite similar, although the magnitude of importance differs substantially. Features of all the domains time, channels and programs are represented in the lists. Most significant difference are commercial programs and foreign channels that seem important for MNL but not or Random Forest. For Random Forest viewing children channels and programs is the most important feature for discriminating household size.
+Overall, the set of important variables between Random Forest and multinomial model is quite similar, although the magnitude of importance differs substantially. Features of all the domains time, channels and programs are represented in the lists. Most significant difference are commercial programs and foreign channels that seem important for multinomial model  but not for Random Forest. For Random Forest viewing children channels and programs is the most important feature for discriminating household size.
 
 One reason for differences may be that multinomial regression did not model any interaction terms between features. The iterative binary partitioning by Random Forest on the other hand is able to model all possible interactions if opportune. Such interactions may differ form tree to tree and is not described mathematically. However we can visualize the overall relationship between two variables by partial dependence plot.
 
@@ -425,14 +425,14 @@ In each case first the effects plot from multinomial linear regression is shown 
 
 # Discussion
 
-In this study we have tried to predict the household size, e.g. the number of individuals living in a home by the TV viewing data that was recorded by the Mediapulse measurement. For the TV viewing raw data 53 features have been extracted and used as input data for learning algorithms. The features comprise viewing characteristics like the daytime, weekday, type of channel and program genre. This input data was first inspected, transformed and visualized. Three different models for statistical learning have been compared in terms of prediction performance: multinomial logistic regression, support vector machine and random forest. Their performance were assessed by accuracy and Cohen's kappa. The most important features were identified by variance importance measures and the dependency of a few features on household size were inspected by partial dependency plots.
+In this study we have tried to predict the household size, e.g. the number of individuals living in a home by the TV viewing data that was recorded by the Mediapulse measurement. For the TV viewing raw data 53 features have been extracted and used as input data for learning algorithms. The features comprise viewing characteristics like the daytime, weekday, type of channel and program genre. This input data was first inspected, transformed and visualized. Three different models for statistical learning have been compared in terms of prediction performance: multinomial logistic regression, support vector machine and random forest. Their performance were assessed by accuracy and Cohen's kappa. The most important features were identified by variable importance measures and the dependency of a few features on household size were inspected by partial dependency plots.
 
 It seems difficult to predict the number of individuals by the TV viewing behavior. An accuracy of about 43% with 27% baseline is rather poor. The prediction of small households (size 1 and 2) is significantly better than that of bigger households. To differentiate between a 3, 4 or 5-person home seems almost impossible.
 
 The different classifier do all yield very similar results. Although they belong to different families of statistical learning algorithms (tree-based, kernel-based and linear regression model) none of them were able to outperform the others. It seems rather unlikely that any other algorithm would yield a significantly better performance.
 
 To some degree the classifiers preferred different features in their variable importance ranking.
-Random Forest is much more flexible in pattern recognition as the multinomial linear regression, particularly as the latter was specified without interaction terms and nonlinear transformation terms (despite the log transformation of all features). It would be interesting to compare the variance importance of SVM, but no procedure to extract such scores form the SVM model was known to the author at time of writing.
+Random Forest is much more flexible in pattern recognition as the multinomial linear regression, particularly as the latter was specified without interaction terms and nonlinear transformation terms (despite the log transformation of all features). It would be interesting to compare the variable importance of SVM, but no procedure to extract such scores form the SVM model was known to the author at time of writing.
 
 The input data, 53 different characteristics of TV viewing duration in seconds was defined based on industry knowledge and intuition. Inspecting the structure of the input data matrix yielded good inter-feature variability and no dominant clustering. It would be possible to add more features such as time-shifted viewing, all 300 channels instead of channel groups or a more sophisticated partitioning of daytime and weekdays. Basically the performance of machine learning algorithms can only increase with more features. However we old not expect a significant improvement, believing that most of relevant characteristics of TV viewing is captured by the 53 features.
 
@@ -535,7 +535,7 @@ ggplot(agree, aes(observed, predicted, agreement)) +
 
 \pagebreak
 
-```{r, echo = FALSE, fig.cap = "\\label{fig:fig9} Variance Importance Plots for the multinomial full model, the reduced model and random forest." }
+```{r, echo = FALSE, fig.cap = "\\label{fig:fig9} Variable importance plots for the multinomial full model, the reduced model and random forest." }
 
 m <- list(multinom.full = m.mnr, multinom.best = m.mnr.best, randomforest = m.rf)
 par(mfrow = c(1,3))
@@ -568,7 +568,7 @@ include_graphics('../data/partialplot.mnr.chn_kids.png')
 
 \pagebreak
 
-```{r, echo = FALSE, fig.align = "center", out.width = "55%", fig.cap = "\\label{fig:fig13} Random forest partial dependence plot for the amount of TV viewing between 17 and 20 o'clock during workdays (variable day_workday_17to20)." }
+```{r, echo = FALSE, fig.align = "center", out.width = "55%", fig.cap = "\\label{fig:fig13} Random forest partial dependence plot for the amount of TV viewing between 17 and 20 o'clock during workdays. " }
 
 include_graphics('../data/partialplot.rf.day_workday_17to20.png')
 ```
